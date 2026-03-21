@@ -14,3 +14,4 @@ packages:
 - name: golangci/golangci-lint@v2.11.3
 - name: evilmartians/lefthook@v2.1.4
 - name: google/yamlfmt@v0.21.0
+- name: k1LoW/octocov@v0.75.5
