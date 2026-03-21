@@ -34,13 +34,13 @@ func TestDefaultMemoDir(t *testing.T) {
 	origMemoDir := os.Getenv("MEMO_DIR")
 	origHome := os.Getenv("HOME")
 	defer func() {
-		os.Setenv("MEMO_DIR", origMemoDir)
-		os.Setenv("HOME", origHome)
+		_ = os.Setenv("MEMO_DIR", origMemoDir)
+		_ = os.Setenv("HOME", origHome)
 	}()
 
 	t.Run("default when MEMO_DIR is unset", func(t *testing.T) {
-		os.Unsetenv("MEMO_DIR")
-		os.Setenv("HOME", "/home/testuser")
+		_ = os.Unsetenv("MEMO_DIR")
+		_ = os.Setenv("HOME", "/home/testuser")
 		got := defaultMemoDir()
 		want := "/home/testuser/Documents/memo"
 		if got != want {
@@ -49,7 +49,7 @@ func TestDefaultMemoDir(t *testing.T) {
 	})
 
 	t.Run("MEMO_DIR set to absolute path", func(t *testing.T) {
-		os.Setenv("MEMO_DIR", "/tmp/mymemo")
+		_ = os.Setenv("MEMO_DIR", "/tmp/mymemo")
 		got := defaultMemoDir()
 		want := "/tmp/mymemo"
 		if got != want {
@@ -58,8 +58,8 @@ func TestDefaultMemoDir(t *testing.T) {
 	})
 
 	t.Run("MEMO_DIR with tilde", func(t *testing.T) {
-		os.Setenv("MEMO_DIR", "~/memos")
-		os.Setenv("HOME", "/home/testuser")
+		_ = os.Setenv("MEMO_DIR", "~/memos")
+		_ = os.Setenv("HOME", "/home/testuser")
 		got := defaultMemoDir()
 		want := "/home/testuser/memos"
 		if got != want {
@@ -68,8 +68,8 @@ func TestDefaultMemoDir(t *testing.T) {
 	})
 
 	t.Run("MEMO_DIR empty string falls back to default", func(t *testing.T) {
-		os.Setenv("MEMO_DIR", "")
-		os.Setenv("HOME", "/home/testuser")
+		_ = os.Setenv("MEMO_DIR", "")
+		_ = os.Setenv("HOME", "/home/testuser")
 		got := defaultMemoDir()
 		want := "/home/testuser/Documents/memo"
 		if got != want {
@@ -83,10 +83,16 @@ func TestFindPrevMemo(t *testing.T) {
 
 	// Create directory structure: tmp/2025/03/
 	dir := filepath.Join(tmp, "2025", "03")
-	os.MkdirAll(dir, 0755)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatalf("MkdirAll() error = %v", err)
+	}
 
-	os.WriteFile(filepath.Join(dir, "2025-03-18.md"), []byte("memo1"), 0644)
-	os.WriteFile(filepath.Join(dir, "2025-03-19.md"), []byte("memo2"), 0644)
+	if err := os.WriteFile(filepath.Join(dir, "2025-03-18.md"), []byte("memo1"), 0644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "2025-03-19.md"), []byte("memo2"), 0644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
 
 	t.Run("finds previous memo excluding today", func(t *testing.T) {
 		prev, prevFile := findPrevMemo(tmp, "2025-03-19")
@@ -119,7 +125,9 @@ func TestCreateTodayMemo(t *testing.T) {
 	tmp := t.TempDir()
 
 	templatePath := filepath.Join(tmp, "template.md")
-	os.WriteFile(templatePath, []byte("<[[]]  [[]]>\n# Daily Memo\n"), 0644)
+	if err := os.WriteFile(templatePath, []byte("<[[]]  [[]]>\n# Daily Memo\n"), 0644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
 
 	todayFile := filepath.Join(tmp, "2025-03-20.md")
 
@@ -160,7 +168,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 	t.Run("replaces [[]]> placeholder", func(t *testing.T) {
 		tmp := t.TempDir()
 		prevFile := filepath.Join(tmp, "prev.md")
-		os.WriteFile(prevFile, []byte("<[[2025-03-18]]  [[]]>\n# Memo\n"), 0644)
+		_ = os.WriteFile(prevFile, []byte("<[[2025-03-18]]  [[]]>\n# Memo\n"), 0644)
 
 		err := updatePrevMemo(prevFile, "2025-03-20")
 		if err != nil {
@@ -177,7 +185,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 	t.Run("appends link when no placeholder and no existing link", func(t *testing.T) {
 		tmp := t.TempDir()
 		prevFile := filepath.Join(tmp, "prev.md")
-		os.WriteFile(prevFile, []byte("# Memo\n"), 0644)
+		_ = os.WriteFile(prevFile, []byte("# Memo\n"), 0644)
 
 		err := updatePrevMemo(prevFile, "2025-03-20")
 		if err != nil {
@@ -194,7 +202,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 	t.Run("does not duplicate existing link", func(t *testing.T) {
 		tmp := t.TempDir()
 		prevFile := filepath.Join(tmp, "prev.md")
-		os.WriteFile(prevFile, []byte("[[2025-03-20]]>\n"), 0644)
+		_ = os.WriteFile(prevFile, []byte("[[2025-03-20]]>\n"), 0644)
 
 		err := updatePrevMemo(prevFile, "2025-03-20")
 		if err != nil {

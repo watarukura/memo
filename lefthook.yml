@@ -22,7 +22,7 @@ pre-commit:
   jobs:
     - name: golangci-lint
       glob: "*.go"
-      run: golangci-lint run -v -fix
+      run: golangci-lint run --fix
     - name: go test
       glob: "*.go"
       run: go test -cover ./...

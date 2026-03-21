@@ -48,8 +48,7 @@ func run() error {
 			}
 			filePath := filepath.Join(memoDir, fileDir, cmd+".md")
 			if _, err := os.Stat(filePath); err == nil {
-				openEditor(filePath)
-				return nil
+				return openEditor(filePath)
 			}
 		}
 	} else if len(args) > 1 {
@@ -202,7 +201,9 @@ func listMemo(memoDir string) {
 
 	selected := runFzf(strings.Join(filenames, "\n"), memoDir)
 	if selected != "" {
-		openEditor(filepath.Join(memoDir, selected))
+		if err := openEditor(filepath.Join(memoDir, selected)); err != nil {
+			log.Fatalf("Error opening editor: %v\n", err)
+		}
 	}
 }
 
