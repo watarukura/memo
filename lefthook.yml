@@ -26,4 +26,11 @@ pre-commit:
     - name: go test
       glob: "*.go"
       run: go test -cover ./...
-
+    - name: typos
+      run: typos --config .typos.toml .
+    - name: yamlfmt
+      glob: "*.{yml,yaml}"
+      run: yamlfmt .
+    - name: actionlint
+      glob: ".github/**/*.{yml,yaml}"
+      run: actionlint

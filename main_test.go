@@ -8,10 +8,10 @@ import (
 
 func TestSearchDir(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    string
-		wantDir  string
-		wantErr  bool
+		name    string
+		input   string
+		wantDir string
+		wantErr bool
 	}{
 		{"normal date file", "2025-03-20.md", "2025/03", false},
 		{"another date file", "2024-12-01.md", "2024/12", false},
@@ -125,7 +125,7 @@ func TestCreateTodayMemo(t *testing.T) {
 	tmp := t.TempDir()
 
 	templatePath := filepath.Join(tmp, "template.md")
-	if err := os.WriteFile(templatePath, []byte("<[[]]  [[]]>\n# Daily Memo\n"), 0644); err != nil {
+	if err := os.WriteFile(templatePath, []byte("<[]()  []()>\n# Daily Memo\n"), 0644); err != nil {
 		t.Fatalf("WriteFile() error = %v", err)
 	}
 
@@ -138,7 +138,7 @@ func TestCreateTodayMemo(t *testing.T) {
 		}
 		b, _ := os.ReadFile(todayFile)
 		content := string(b)
-		if want := "<[[2025-03-19]]  [[]]>\n# Daily Memo\n"; content != want {
+		if want := "<[2025-03-19](2025-03-19)  []()>\n# Daily Memo\n"; content != want {
 			t.Errorf("content = %q, want %q", content, want)
 		}
 	})
@@ -151,7 +151,7 @@ func TestCreateTodayMemo(t *testing.T) {
 		}
 		b, _ := os.ReadFile(todayFile2)
 		content := string(b)
-		if want := "<[[]]  [[]]>\n# Daily Memo\n"; content != want {
+		if want := "<[]()  []()>\n# Daily Memo\n"; content != want {
 			t.Errorf("content = %q, want %q", content, want)
 		}
 	})
@@ -165,10 +165,10 @@ func TestCreateTodayMemo(t *testing.T) {
 }
 
 func TestUpdatePrevMemo(t *testing.T) {
-	t.Run("replaces [[]]> placeholder", func(t *testing.T) {
+	t.Run("replaces []()> placeholder", func(t *testing.T) {
 		tmp := t.TempDir()
 		prevFile := filepath.Join(tmp, "prev.md")
-		_ = os.WriteFile(prevFile, []byte("<[[2025-03-18]]  [[]]>\n# Memo\n"), 0644)
+		_ = os.WriteFile(prevFile, []byte("<[2025-03-18](2025-03-18)  []()>\n# Memo\n"), 0644)
 
 		err := updatePrevMemo(prevFile, "2025-03-20")
 		if err != nil {
@@ -176,7 +176,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 		}
 		b, _ := os.ReadFile(prevFile)
 		content := string(b)
-		want := "<[[2025-03-18]]  [[2025-03-20]]>\n# Memo\n"
+		want := "<[2025-03-18](2025-03-18)  [2025-03-20](2025-03-20)>\n# Memo\n"
 		if content != want {
 			t.Errorf("content = %q, want %q", content, want)
 		}
@@ -193,7 +193,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 		}
 		b, _ := os.ReadFile(prevFile)
 		content := string(b)
-		want := "# Memo\n[[2025-03-20]]>\n"
+		want := "# Memo\n[2025-03-20](2025-03-20)>\n"
 		if content != want {
 			t.Errorf("content = %q, want %q", content, want)
 		}
@@ -202,7 +202,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 	t.Run("does not duplicate existing link", func(t *testing.T) {
 		tmp := t.TempDir()
 		prevFile := filepath.Join(tmp, "prev.md")
-		_ = os.WriteFile(prevFile, []byte("[[2025-03-20]]>\n"), 0644)
+		_ = os.WriteFile(prevFile, []byte("[2025-03-20](2025-03-20)>\n"), 0644)
 
 		err := updatePrevMemo(prevFile, "2025-03-20")
 		if err != nil {
@@ -210,7 +210,7 @@ func TestUpdatePrevMemo(t *testing.T) {
 		}
 		b, _ := os.ReadFile(prevFile)
 		content := string(b)
-		want := "[[2025-03-20]]>\n"
+		want := "[2025-03-20](2025-03-20)>\n"
 		if content != want {
 			t.Errorf("content = %q, want %q", content, want)
 		}
