@@ -80,9 +80,9 @@ func run() error {
 }
 
 func searchDir(memoFile string) (string, error) {
-	splited := strings.Split(memoFile, "-")
-	yyyy := splited[0]
-	mm := splited[1]
+	yyyymm := strings.Split(memoFile, "-")
+	yyyy := yyyymm[0]
+	mm := yyyymm[1]
 	return yyyy + "/" + mm, nil
 }
 

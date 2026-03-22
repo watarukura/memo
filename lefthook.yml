@@ -26,4 +26,6 @@ pre-commit:
     - name: go test
       glob: "*.go"
       run: go test -cover ./...
+    - name: typos
+      run: typos .
 
