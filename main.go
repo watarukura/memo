@@ -126,7 +126,7 @@ func createTodayMemo(templatePath, todayFile, prev string) error {
 	}
 
 	content := string(b)
-	content = strings.ReplaceAll(content, "<[[]]", "<[["+prev+"]]")
+	content = strings.ReplaceAll(content, "<[]()", "<["+prev+"]("+prev+")")
 
 	if err := os.WriteFile(todayFile, []byte(content), 0644); err != nil {
 		return fmt.Errorf("failed to write today's memo: %w", err)
@@ -142,10 +142,10 @@ func updatePrevMemo(prevFile, today string) error {
 	}
 
 	content := string(b)
-	newLink := "[[" + today + "]]>"
+	newLink := "[" + today + "](" + today + ")>"
 
-	if strings.Contains(content, "[[]]>") {
-		content = strings.Replace(content, "[[]]>", newLink, 1)
+	if strings.Contains(content, "[]()>") {
+		content = strings.Replace(content, "[]()>", newLink, 1)
 	} else if !strings.Contains(content, newLink) {
 		if !strings.HasSuffix(content, "\n") {
 			content += "\n"
