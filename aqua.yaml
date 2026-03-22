@@ -16,3 +16,4 @@ packages:
 - name: google/yamlfmt@v0.21.0
 - name: k1LoW/octocov@v0.75.5
 - name: crate-ci/typos@v1.44.0
+- name: rhysd/actionlint@v1.7.11
