@@ -30,7 +30,7 @@ pre-commit:
       run: typos .
     - name: yamlfmt
       glob: "*.{yml,yaml}"
-      run: yamlfmt
+      run: yamlfmt .
     - name: actionlint
       glob: ".github/**/*.{yml,yaml}"
       run: actionlint
