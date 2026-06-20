@@ -128,6 +128,11 @@ func createTodayMemo(templatePath, todayFile, prev string) error {
 	content := string(b)
 	content = strings.ReplaceAll(content, "<[]()", "<["+prev+"]("+prev+")")
 
+	dir := filepath.Dir(todayFile)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return fmt.Errorf("failed to create directory: %w", err)
+	}
+
 	if err := os.WriteFile(todayFile, []byte(content), 0644); err != nil {
 		return fmt.Errorf("failed to write today's memo: %w", err)
 	}

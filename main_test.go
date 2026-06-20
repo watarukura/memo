@@ -162,6 +162,17 @@ func TestCreateTodayMemo(t *testing.T) {
 			t.Error("expected error for missing template")
 		}
 	})
+
+	t.Run("creates directory if it does not exist", func(t *testing.T) {
+		todayFileInNewDir := filepath.Join(tmp, "2026", "06", "2026-06-20.md")
+		err := createTodayMemo(templatePath, todayFileInNewDir, "2026-06-19")
+		if err != nil {
+			t.Fatalf("createTodayMemo() error = %v", err)
+		}
+		if _, err := os.Stat(todayFileInNewDir); os.IsNotExist(err) {
+			t.Errorf("expected file %q to be created", todayFileInNewDir)
+		}
+	})
 }
 
 func TestUpdatePrevMemo(t *testing.T) {
